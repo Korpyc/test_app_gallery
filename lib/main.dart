@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:test_app_gallery/src/json_model.dart';
 
 void main() {
   runApp(MyApp());
@@ -27,39 +28,65 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  Future<SomeImageList> someImageList;
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+  @override
+  void initState() {
+    someImageList = getImagesList();
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+        appBar: AppBar(
+          title: Text(widget.title),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ),
-    );
+        body: FutureBuilder<SomeImageList>(
+          future: someImageList,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return ListView.builder(
+                  itemCount: snapshot.data.someImageList.length,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      child: ListTile(
+                          leading: Image.network(
+                            snapshot.data.someImageList[index].urls.thumb,
+                          ),
+                          title: Text(
+                              '${snapshot.data.someImageList[index].alt_description}'),
+                          subtitle: Text(
+                              '${snapshot.data.someImageList[index].user.name}'),
+                          onTap: () =>
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => ImageViewPage(
+                                        title: snapshot
+                                            .data
+                                            .someImageList[index]
+                                            .alt_description,
+                                        url: snapshot.data.someImageList[index]
+                                            .urls.full,
+                                      )))),
+                    );
+                  });
+            } else if (snapshot.hasError) {
+              return Text('Error!');
+            }
+            return Center(child: CircularProgressIndicator());
+          },
+        ));
+  }
+}
+
+class ImageViewPage extends StatelessWidget {
+  final url;
+  final title;
+
+  ImageViewPage({this.title, this.url});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(appBar: AppBar(), body: Center(child: Image.network(url)));
   }
 }
