@@ -1,6 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:test_app_gallery/src/values.dart';
 
 part 'json_model.g.dart';
 
@@ -50,8 +51,8 @@ class SomeImageList {
 }
 
 Future<SomeImageList> getImagesList() async {
-  const String url =
-      'https://api.unsplash.com/photos/?client_id=896d4f52c589547b2134bd75ed48742db637fa51810b49b607e37e46ab2c0043';
+  const String url = urlApi;
+
   final responce = await http.get(url);
 
   if (responce.statusCode == 200) {

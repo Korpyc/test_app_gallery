@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:test_app_gallery/src/json_model.dart';
+import 'package:test_app_gallery/src/theme.dart';
+import 'package:test_app_gallery/src/values.dart';
 
 void main() {
   runApp(MyApp());
@@ -9,12 +11,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'test_app_gallery',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: MyHomePage(title: 'Gallery'),
+      title: appTitle,
+      theme: primeTheme(),
+      home: MyHomePage(title: appBarTitleText),
     );
   }
 }
@@ -40,7 +39,11 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.title),
+          title: Text(
+            widget.title,
+            style: Theme.of(context).textTheme.headline6,
+          ),
+          centerTitle: true,
         ),
         body: FutureBuilder<SomeImageList>(
           future: someImageList,
@@ -71,7 +74,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     );
                   });
             } else if (snapshot.hasError) {
-              return Text('Error!');
+              return Center(
+                  child: Text(
+                errorMessage,
+                style: Theme.of(context).textTheme.bodyText1,
+              ));
             }
             return Center(child: CircularProgressIndicator());
           },
@@ -87,6 +94,11 @@ class ImageViewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(), body: Center(child: Image.network(url)));
+    return Scaffold(
+        appBar: AppBar(),
+        body: Stack(children: [
+          Center(child: CircularProgressIndicator()),
+          Center(child: Image.network(url))
+        ]));
   }
 }
